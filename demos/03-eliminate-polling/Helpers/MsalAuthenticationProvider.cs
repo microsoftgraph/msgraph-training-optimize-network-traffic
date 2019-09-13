@@ -13,6 +13,7 @@ namespace Helpers
     private string[] _scopes;
     private string _username;
     private SecureString _password;
+    private string _accessToken;
 
     public MsalAuthenticationProvider(IPublicClientApplication clientApplication, string[] scopes, string username, SecureString password)
     {
@@ -20,12 +21,17 @@ namespace Helpers
       _scopes = scopes;
       _username = username;
       _password = password;
+      _accessToken = null;
     }
 
     public async Task AuthenticateRequestAsync(HttpRequestMessage request)
     {
-      var token = await GetTokenAsync();
-      request.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
+      if (string.IsNullOrEmpty(_accessToken))
+      {
+        _accessToken = await GetTokenAsync();
+      }
+
+      request.Headers.Authorization = new AuthenticationHeaderValue("bearer", _accessToken);
     }
 
     public async Task<string> GetTokenAsync()

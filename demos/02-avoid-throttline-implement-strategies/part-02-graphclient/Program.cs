@@ -34,13 +34,12 @@ namespace graphconsoleapp
 
       var client = GetAuthenticatedGraphClient(config, userName, userPassword);
 
-      var options = new List<QueryOption>
-      {
-        new QueryOption("$select","id"),
-        new QueryOption("$top","100")
-      };
-
-      var clientResponse = client.Me.Messages.Request(options).GetAsync().Result;
+      var clientResponse = client.Me.Messages
+                                    .Request()
+                                    .Select(m => new { m.Id })
+                                    .Top(100)
+                                    .GetAsync()
+                                    .Result;
 
       var tasks = new List<Task>();
       foreach (var graphMessage in clientResponse.CurrentPage)

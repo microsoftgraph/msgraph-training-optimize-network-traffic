@@ -81,17 +81,17 @@ namespace graphconsoleapp
     {
       IUserDeltaCollectionPage page;
 
-      var options = new List<QueryOption>
-      {
-        new QueryOption("$select","id,GivenName,Surname")
-      };
-
       // IF this is the first request (previous=null), then request all users
       //    and include Delta() to request a delta link to be included in the
       //    last page of data
       if (_previousPage == null)
       {
-        page = graphClient.Users.Delta().Request(options).GetAsync().Result;
+        page = graphClient.Users
+                          .Delta()
+                          .Request()
+                          .Select("Id,GivenName,Surname")
+                          .GetAsync()
+                          .Result;
       }
       // ELSE, not the first page so get the next page of users
       else

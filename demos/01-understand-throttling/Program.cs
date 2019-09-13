@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security;
 using System.Threading.Tasks;
+using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using Microsoft.Extensions.Configuration;
 using Helpers;
@@ -114,7 +115,7 @@ namespace graphconsoleapp
       var cca = PublicClientApplicationBuilder.Create(clientId)
                                               .WithAuthority(authority)
                                               .Build();
-      return new MsalAuthenticationProvider(cca, scopes.ToArray(), userName, userPassword);
+      return MsalAuthenticationProvider.GetInstance(cca, scopes.ToArray(), userName, userPassword);
     }
     private static IConfigurationRoot LoadAppSettings()
     {
@@ -130,7 +131,6 @@ namespace graphconsoleapp
         {
           return null;
         }
-
         return config;
       }
       catch (System.IO.FileNotFoundException)
