@@ -169,8 +169,7 @@ namespace graphconsoleapp
                           .Build();
 
         if (string.IsNullOrEmpty(config["applicationId"]) ||
-            string.IsNullOrEmpty(config["tenantId"]) ||
-            string.IsNullOrEmpty(config["domain"]))
+            string.IsNullOrEmpty(config["tenantId"]))
         {
           return null;
         }
