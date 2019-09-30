@@ -15,11 +15,11 @@ The steps to run each demo are identical and you can use the same Azure AD appli
 - [.NET Core 2.2 SDK](https://dotnet.microsoft.com/download)
 - [Visual Studio Code](https://code.visualstudio.com/)
 
-### Demos
+## Run this Completed Project
 
-- Create an Azure AD application by following the instructions in the lab exercise associated with this demo. In this step, you are instructed to collect three data elements:
+- Rename the file **appsettings.json.example** to **appsettings.json**
+- Create an Azure AD application by following the instructions in the lab exercise associated with this demo. In this step, you are instructed to collect these data elements:
   - tenantId
   - applicationId
-  - domain
-- Update the properties in the [appsettings.json](./appsettings.json) with the values you collected in the last step.
+- Update the properties in the **[appsettings.json](./appsettings.json)** with the values you collected in the last step.
 - Build & run the application by following the instructions in the lab exercise associated with this demo.

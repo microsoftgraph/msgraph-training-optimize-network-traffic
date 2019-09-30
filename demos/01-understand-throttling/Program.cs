@@ -1,10 +1,14 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security;
 using System.Threading.Tasks;
+using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using Microsoft.Extensions.Configuration;
 using Helpers;
@@ -114,7 +118,7 @@ namespace graphconsoleapp
       var cca = PublicClientApplicationBuilder.Create(clientId)
                                               .WithAuthority(authority)
                                               .Build();
-      return new MsalAuthenticationProvider(cca, scopes.ToArray(), userName, userPassword);
+      return MsalAuthenticationProvider.GetInstance(cca, scopes.ToArray(), userName, userPassword);
     }
     private static IConfigurationRoot LoadAppSettings()
     {
@@ -126,12 +130,10 @@ namespace graphconsoleapp
                           .Build();
 
         if (string.IsNullOrEmpty(config["applicationId"]) ||
-            string.IsNullOrEmpty(config["tenantId"]) ||
-            string.IsNullOrEmpty(config["domain"]))
+            string.IsNullOrEmpty(config["tenantId"]))
         {
           return null;
         }
-
         return config;
       }
       catch (System.IO.FileNotFoundException)

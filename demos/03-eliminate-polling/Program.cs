@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -81,17 +84,17 @@ namespace graphconsoleapp
     {
       IUserDeltaCollectionPage page;
 
-      var options = new List<QueryOption>
-      {
-        new QueryOption("$select","id,GivenName,Surname")
-      };
-
       // IF this is the first request (previous=null), then request all users
       //    and include Delta() to request a delta link to be included in the
       //    last page of data
       if (_previousPage == null)
       {
-        page = graphClient.Users.Delta().Request(options).GetAsync().Result;
+        page = graphClient.Users
+                          .Delta()
+                          .Request()
+                          .Select("Id,GivenName,Surname")
+                          .GetAsync()
+                          .Result;
       }
       // ELSE, not the first page so get the next page of users
       else
@@ -157,7 +160,7 @@ namespace graphconsoleapp
       var cca = PublicClientApplicationBuilder.Create(clientId)
                                               .WithAuthority(authority)
                                               .Build();
-      return new MsalAuthenticationProvider(cca, scopes.ToArray(), userName, userPassword);
+      return MsalAuthenticationProvider.GetInstance(cca, scopes.ToArray(), userName, userPassword);
     }
     private static IConfigurationRoot LoadAppSettings()
     {
@@ -169,8 +172,7 @@ namespace graphconsoleapp
                           .Build();
 
         if (string.IsNullOrEmpty(config["applicationId"]) ||
-            string.IsNullOrEmpty(config["tenantId"]) ||
-            string.IsNullOrEmpty(config["domain"]))
+            string.IsNullOrEmpty(config["tenantId"]))
         {
           return null;
         }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -34,13 +37,12 @@ namespace graphconsoleapp
 
       var client = GetAuthenticatedGraphClient(config, userName, userPassword);
 
-      var options = new List<QueryOption>
-      {
-        new QueryOption("$select","id"),
-        new QueryOption("$top","100")
-      };
-
-      var clientResponse = client.Me.Messages.Request(options).GetAsync().Result;
+      var clientResponse = client.Me.Messages
+                                    .Request()
+                                    .Select(m => new { m.Id })
+                                    .Top(100)
+                                    .GetAsync()
+                                    .Result;
 
       var tasks = new List<Task>();
       foreach (var graphMessage in clientResponse.CurrentPage)
@@ -121,7 +123,7 @@ namespace graphconsoleapp
       var cca = PublicClientApplicationBuilder.Create(clientId)
                                               .WithAuthority(authority)
                                               .Build();
-      return new MsalAuthenticationProvider(cca, scopes.ToArray(), userName, userPassword);
+      return MsalAuthenticationProvider.GetInstance(cca, scopes.ToArray(), userName, userPassword);
     }
     private static IConfigurationRoot LoadAppSettings()
     {
@@ -133,8 +135,7 @@ namespace graphconsoleapp
                           .Build();
 
         if (string.IsNullOrEmpty(config["applicationId"]) ||
-            string.IsNullOrEmpty(config["tenantId"]) ||
-            string.IsNullOrEmpty(config["domain"]))
+            string.IsNullOrEmpty(config["tenantId"]))
         {
           return null;
         }
