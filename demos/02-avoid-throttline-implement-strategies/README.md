@@ -1,6 +1,6 @@
 # Demo: Avoid throttling & implement throttling strategies
 
-This completed project is the result of the lab exercise **Avoid throttling & implement throttling strategies** that is referenced in the [README](../../) in this repo.
+This completed project is the result of the lab exercise **Avoid throttling & implement throttling strategies** that is referenced in the [README](../../README.md) in this repo.
 
 This demo consists of two smaller demos. Both demos do the same thing: implement a throttling strategy in a .NET Core console application. The first demo does this using the **HttpClient** object while the second demo uses the Microsoft Graph SDK.
 
@@ -12,7 +12,7 @@ The steps to run each demo are identical and you can use the same Azure AD appli
 ## Prerequisites
 
 - Office 365 Tenancy
-- [.NET Core 2.2 SDK](https://dotnet.microsoft.com/download)
+- [.NET Core 3.1 SDK](https://dotnet.microsoft.com/download)
 - [Visual Studio Code](https://code.visualstudio.com/)
 
 ## Run this Completed Project
@@ -21,5 +21,5 @@ The steps to run each demo are identical and you can use the same Azure AD appli
 - Create an Azure AD application by following the instructions in the lab exercise associated with this demo. In this step, you are instructed to collect these data elements:
   - tenantId
   - applicationId
-- Update the properties in the **[appsettings.json](./appsettings.json)** with the values you collected in the last step.
+- Update the properties in the **appsettings.json** with the values you collected in the last step.
 - Build & run the application by following the instructions in the lab exercise associated with this demo.

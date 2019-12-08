@@ -8,8 +8,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security;
 using System.Threading.Tasks;
-using Microsoft.Graph;
 using Microsoft.Identity.Client;
+using Microsoft.Graph;
 using Microsoft.Extensions.Configuration;
 using Helpers;
 
@@ -39,7 +39,7 @@ namespace graphconsoleapp
       var failResponseCode = HttpStatusCode.OK;
       HttpResponseHeaders failedHeaders = null;
 
-      for (int i = 1; i < totalRequests; i++)
+      for (int i = 0; i < totalRequests; i++)
       {
         tasks.Add(Task.Run(() =>
         {
@@ -73,12 +73,49 @@ namespace graphconsoleapp
       }
     }
 
-    private static string ReadUsername()
+    private static IConfigurationRoot LoadAppSettings()
     {
-      string username;
-      Console.WriteLine("Enter your username");
-      username = Console.ReadLine();
-      return username;
+      try
+      {
+        var config = new ConfigurationBuilder()
+                          .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                          .AddJsonFile("appsettings.json", false, true)
+                          .Build();
+
+        if (string.IsNullOrEmpty(config["applicationId"]) ||
+            string.IsNullOrEmpty(config["tenantId"]))
+        {
+          return null;
+        }
+
+        return config;
+      }
+      catch (System.IO.FileNotFoundException)
+      {
+        return null;
+      }
+    }
+
+    private static IAuthenticationProvider CreateAuthorizationProvider(IConfigurationRoot config, string userName, SecureString userPassword)
+    {
+      var clientId = config["applicationId"];
+      var authority = $"https://login.microsoftonline.com/{config["tenantId"]}/v2.0";
+
+      List<string> scopes = new List<string>();
+      scopes.Add("User.Read");
+      scopes.Add("Mail.Read");
+
+      var cca = PublicClientApplicationBuilder.Create(clientId)
+                                              .WithAuthority(authority)
+                                              .Build();
+      return MsalAuthenticationProvider.GetInstance(cca, scopes.ToArray(), userName, userPassword);
+    }
+
+    private static HttpClient GetAuthenticatedHTTPClient(IConfigurationRoot config, string userName, SecureString userPassword)
+    {
+      var authenticationProvider = CreateAuthorizationProvider(config, userName, userPassword);
+      var httpClient = new HttpClient(new AuthHandler(authenticationProvider, new HttpClientHandler()));
+      return httpClient;
     }
 
     private static SecureString ReadPassword()
@@ -99,48 +136,12 @@ namespace graphconsoleapp
       return password;
     }
 
-    private static HttpClient GetAuthenticatedHTTPClient(IConfigurationRoot config, string userName, SecureString userPassword)
+    private static string ReadUsername()
     {
-      var authenticationProvider = CreateAuthorizationProvider(config, userName, userPassword);
-      var httpClient = new HttpClient(new AuthHandler(authenticationProvider, new HttpClientHandler()));
-      return httpClient;
+      string username;
+      Console.WriteLine("Enter your username");
+      username = Console.ReadLine();
+      return username;
     }
-
-    private static IAuthenticationProvider CreateAuthorizationProvider(IConfigurationRoot config, string userName, SecureString userPassword)
-    {
-      var clientId = config["applicationId"];
-      var authority = $"https://login.microsoftonline.com/{config["tenantId"]}/v2.0";
-
-      List<string> scopes = new List<string>();
-      scopes.Add("User.Read");
-      scopes.Add("Mail.Read");
-
-      var cca = PublicClientApplicationBuilder.Create(clientId)
-                                              .WithAuthority(authority)
-                                              .Build();
-      return MsalAuthenticationProvider.GetInstance(cca, scopes.ToArray(), userName, userPassword);
-    }
-    private static IConfigurationRoot LoadAppSettings()
-    {
-      try
-      {
-        var config = new ConfigurationBuilder()
-                          .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-                          .AddJsonFile("appsettings.json", false, true)
-                          .Build();
-
-        if (string.IsNullOrEmpty(config["applicationId"]) ||
-            string.IsNullOrEmpty(config["tenantId"]))
-        {
-          return null;
-        }
-        return config;
-      }
-      catch (System.IO.FileNotFoundException)
-      {
-        return null;
-      }
-    }
-
   }
 }
