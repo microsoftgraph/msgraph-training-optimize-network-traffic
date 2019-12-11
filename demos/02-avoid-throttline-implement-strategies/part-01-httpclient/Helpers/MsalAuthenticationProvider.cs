@@ -49,9 +49,6 @@ namespace Helpers
     {
       if (!string.IsNullOrEmpty(_userId))
       {
-        // First attempt to get the token silently, which should work if user has
-        // already signed-in. This will get a token from the cache rather than making
-        // extra network calls to the Microsoft Identity endpoints
         try
         {
           var account = await _clientApplication.GetAccountAsync(_userId);
@@ -62,19 +59,10 @@ namespace Helpers
             return silentResult.AccessToken;
           }
         }
-        catch (MsalUiRequiredException)
-        {
-          // Thrown when there is no token for the user in the cache
-        }
+        catch (MsalUiRequiredException){ }
       }
 
-      // If the userId is null or the AcquireTokenSilent call failed,
-      // fall back to AcquireTokenByUsernamePassword, which makes a token request
-      // to the Microsoft Identity endpoints
       var result = await _clientApplication.AcquireTokenByUsernamePassword(_scopes, _username, _password).ExecuteAsync();
-
-      // Save the user's unique ID so the account can be
-      // retrieved on subsequent calls to avoid repeated network traffic
       _userId = result.Account.HomeAccountId.Identifier;
       return result.AccessToken;
     }
