@@ -18,7 +18,6 @@ namespace graphconsoleapp
 {
   class Program
   {
-
     private static object _deltaLink = null;
     private static IUserDeltaCollectionPage _previousPage = null;
 
@@ -121,6 +120,7 @@ namespace graphconsoleapp
 
     private static Message GetMessageDetail(GraphServiceClient client, string messageId)
     {
+      // submit request to Microsoft Graph & wait to process response
       return client.Me.Messages[messageId].Request().GetAsync().Result;
     }
 
