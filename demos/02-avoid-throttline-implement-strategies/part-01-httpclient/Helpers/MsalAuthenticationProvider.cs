@@ -59,7 +59,7 @@ namespace Helpers
             return silentResult.AccessToken;
           }
         }
-        catch (MsalUiRequiredException){ }
+        catch (MsalUiRequiredException) { }
       }
 
       var result = await _clientApplication.AcquireTokenByUsernamePassword(_scopes, _username, _password).ExecuteAsync();

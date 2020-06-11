@@ -17,9 +17,9 @@ The steps to run each demo are identical and you can use the same Azure AD appli
 
 ## Run this Completed Project
 
-- Rename the file **appsettings.json.example** to **appsettings.json**
 - Create an Azure AD application by following the instructions in the lab exercise associated with this demo. In this step, you are instructed to collect these data elements:
   - tenantId
   - applicationId
+- Rename the file **appsettings.json.example** to **appsettings.json**
 - Update the properties in the **appsettings.json** with the values you collected in the last step.
 - Build & run the application by following the instructions in the lab exercise associated with this demo.

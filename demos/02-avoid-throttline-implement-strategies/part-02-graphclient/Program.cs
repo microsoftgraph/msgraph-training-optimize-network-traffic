@@ -44,7 +44,6 @@ namespace graphconsoleapp
                                     .GetAsync()
                                     .Result;
 
-
       var tasks = new List<Task>();
       foreach (var graphMessage in clientResponse.CurrentPage)
       {
