@@ -149,4 +149,5 @@ namespace graphconsoleapp
       return client.Me.Messages[messageId].Request().GetAsync().Result;
     }
   }
+
 }
