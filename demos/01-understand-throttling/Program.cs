@@ -144,5 +144,4 @@ namespace graphconsoleapp
       return username;
     }
   }
-
 }

@@ -15,4 +15,4 @@ This completed project is the result of the lab exercise **Eliminate polling Mic
   - applicationId
 - Rename the file **appsettings.json.example** to **appsettings.json**
 - Update the properties in the **appsettings.json** with the values you collected in the last step.
-- Build & run the application by following the instructions in the lab exercise associated with this demo.
+- Build and run the application by following the instructions in the lab exercise associated with this demo.
