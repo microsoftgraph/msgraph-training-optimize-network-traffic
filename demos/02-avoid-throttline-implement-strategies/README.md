@@ -12,7 +12,7 @@ The steps to run each demo are identical and you can use the same Azure AD appli
 ## Prerequisites
 
 - [Microsoft 365 tenant](https://developer.microsoft.com/office/dev-program?ocid=MSlearn)
-- [.NET Core 3.1 SDK](https://dotnet.microsoft.com/download)
+- [.NET 5 SDK](https://dotnet.microsoft.com/download)
 - [Visual Studio Code](https://code.visualstudio.com/)
 
 ## Run this Completed Project
