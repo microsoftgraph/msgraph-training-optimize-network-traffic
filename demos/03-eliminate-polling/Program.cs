@@ -20,7 +20,6 @@ namespace graphconsoleapp
   {
     private static object _deltaLink = null;
     private static IUserDeltaCollectionPage _previousPage = null;
-
     static void Main(string[] args)
     {
       Console.WriteLine("Hello World!");
