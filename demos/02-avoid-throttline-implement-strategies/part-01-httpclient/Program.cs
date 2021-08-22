@@ -12,7 +12,7 @@ using Microsoft.Identity.Client;
 using Microsoft.Graph;
 using Microsoft.Extensions.Configuration;
 using Helpers;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace graphconsoleapp
 {
@@ -41,7 +41,7 @@ namespace graphconsoleapp
       // enumerate through the list of messages
       var httpResponseTask = clientResponse.Content.ReadAsStringAsync();
       httpResponseTask.Wait();
-      var graphMessages = JsonConvert.DeserializeObject<Messages>(httpResponseTask.Result);
+      var graphMessages = JsonSerializer.Deserialize<Messages>(httpResponseTask.Result);
 
       var tasks = new List<Task>();
       foreach (var graphMessage in graphMessages.Items)
@@ -158,7 +158,7 @@ namespace graphconsoleapp
       // IF request successful (not throttled), set message to retrieved message
       if (clientResponse.StatusCode == HttpStatusCode.OK)
       {
-        messageDetail = JsonConvert.DeserializeObject<Message>(httpResponseTask.Result);
+        messageDetail = JsonSerializer.Deserialize<Message>(httpResponseTask.Result);
       }
       // ELSE IF request was throttled (429, aka: TooManyRequests)...
       else if (clientResponse.StatusCode == HttpStatusCode.TooManyRequests)

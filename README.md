@@ -28,7 +28,7 @@ The lab for this module is available in multiple units within the associated Mic
 
 ## Watch the module
 
-This module has been recorded and is available in the Office Development YouTube channel: [Optimize Network Traffic with Microsoft Graph](https://youtu.be/cVIGICXp9Ws)
+This module has been recorded and is available in the Office Development YouTube channel: [Optimize Network Traffic with Microsoft Graph](https://www.youtube.com/playlist?list=PLWZJrkeLOrbabcgkU-_DQJfEUbIw1qZeK)
 
 ## Contributors
 
@@ -42,6 +42,7 @@ This module has been recorded and is available in the Office Development YouTube
 
 | Version |        Date        |                                        Comments                                         |
 | ------- | ------------------ | --------------------------------------------------------------------------------------- |
+| 1.10    | September 13, 2021 | FY2022Q1 content refresh                                                                |
 | 1.9     | May 26, 2021       | Refresh slides to new template                                                          |
 | 1.8     | May 12, 2021       | FY2021Q3 content refresh                                                                |
 | 1.7     | March 6, 2021      | FY2021Q3 content refresh                                                                |
