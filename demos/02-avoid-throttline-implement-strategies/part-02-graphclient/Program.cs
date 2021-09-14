@@ -12,7 +12,7 @@ using Microsoft.Identity.Client;
 using Microsoft.Graph;
 using Microsoft.Extensions.Configuration;
 using Helpers;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace graphconsoleapp
 {
