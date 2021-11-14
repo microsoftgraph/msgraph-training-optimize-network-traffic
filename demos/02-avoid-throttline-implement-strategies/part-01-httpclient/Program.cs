@@ -16,9 +16,9 @@ using System.Text.Json;
 
 namespace graphconsoleapp
 {
-  class Program
+  public class Program
   {
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
       Console.WriteLine("Hello World!");
 
@@ -42,9 +42,10 @@ namespace graphconsoleapp
       var httpResponseTask = clientResponse.Content.ReadAsStringAsync();
       httpResponseTask.Wait();
       var graphMessages = JsonSerializer.Deserialize<Messages>(httpResponseTask.Result);
+      var items = graphMessages == null ? Array.Empty<Message>() : graphMessages.Items;
 
       var tasks = new List<Task>();
-      foreach (var graphMessage in graphMessages.Items)
+      foreach (var graphMessage in items)
       {
         tasks.Add(Task.Run(() =>
         {
@@ -53,7 +54,10 @@ namespace graphconsoleapp
 
           var messageDetail = GetMessageDetail(client, graphMessage.Id);
 
-          Console.WriteLine("SUBJECT: {0}", messageDetail.Subject);
+          if (messageDetail != null)
+          {
+            Console.WriteLine("SUBJECT: {0}", messageDetail.Subject);
+          }
 
         }));
       }
@@ -71,7 +75,7 @@ namespace graphconsoleapp
       Console.WriteLine("Elapsed time: {0} seconds", stopwatch.Elapsed.Seconds);
     }
 
-    private static IConfigurationRoot LoadAppSettings()
+    private static IConfigurationRoot? LoadAppSettings()
     {
       try
       {
@@ -136,15 +140,15 @@ namespace graphconsoleapp
 
     private static string ReadUsername()
     {
-      string username;
+      string? username;
       Console.WriteLine("Enter your username");
       username = Console.ReadLine();
-      return username;
+      return username ?? "";
     }
 
-    private static Message GetMessageDetail(HttpClient client, string messageId, int defaultDelay = 2)
+    private static Message? GetMessageDetail(HttpClient client, string messageId, int defaultDelay = 2)
     {
-      Message messageDetail = null;
+      Message? messageDetail = null;
 
       string endpoint = "https://graph.microsoft.com/v1.0/me/messages/" + messageId;
 
@@ -164,10 +168,11 @@ namespace graphconsoleapp
       else if (clientResponse.StatusCode == HttpStatusCode.TooManyRequests)
       {
         // get retry-after if provided; if not provided default to 2s
-        int retryAfterDelay = defaultDelay;
-        if (clientResponse.Headers.RetryAfter.Delta.HasValue && (clientResponse.Headers.RetryAfter.Delta.Value.Seconds > 0))
+        var retryAfterDelay = defaultDelay;
+        var retryAfter = clientResponse.Headers.RetryAfter;
+        if (retryAfter != null && retryAfter.Delta.HasValue && (retryAfter.Delta.Value.Seconds > 0))
         {
-          retryAfterDelay = clientResponse.Headers.RetryAfter.Delta.Value.Seconds;
+          retryAfterDelay = retryAfter.Delta.Value.Seconds;
         }
 
         // wait for specified time as instructed by Microsoft Graph's Retry-After header,
