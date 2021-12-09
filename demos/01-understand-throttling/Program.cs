@@ -15,9 +15,9 @@ using Helpers;
 
 namespace graphconsoleapp
 {
-  class Program
+  public class Program
   {
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
       Console.WriteLine("Hello World!");
 
@@ -37,7 +37,7 @@ namespace graphconsoleapp
       var successRequests = 0;
       var tasks = new List<Task>();
       var failResponseCode = HttpStatusCode.OK;
-      HttpResponseHeaders failedHeaders = null;
+      HttpResponseHeaders failedHeaders = null!;
 
       for (int i = 0; i < totalRequests; i++)
       {
@@ -73,7 +73,7 @@ namespace graphconsoleapp
       }
     }
 
-    private static IConfigurationRoot LoadAppSettings()
+    private static IConfigurationRoot? LoadAppSettings()
     {
       try
       {
@@ -138,10 +138,10 @@ namespace graphconsoleapp
 
     private static string ReadUsername()
     {
-      string username;
+      string? username;
       Console.WriteLine("Enter your username");
       username = Console.ReadLine();
-      return username;
+      return username ?? "";
     }
   }
 }

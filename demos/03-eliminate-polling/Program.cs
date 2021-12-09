@@ -16,11 +16,12 @@ using System.Text.Json;
 
 namespace graphconsoleapp
 {
-  class Program
+  public class Program
   {
-    private static object _deltaLink = null;
-    private static IUserDeltaCollectionPage _previousPage = null;
-    static void Main(string[] args)
+    private static object? _deltaLink = null;
+    private static IUserDeltaCollectionPage? _previousPage = null;
+
+    public static void Main(string[] args)
     {
       Console.WriteLine("Hello World!");
 
@@ -46,7 +47,7 @@ namespace graphconsoleapp
       }
     }
 
-    private static IConfigurationRoot LoadAppSettings()
+    private static IConfigurationRoot? LoadAppSettings()
     {
       try
       {
@@ -111,10 +112,10 @@ namespace graphconsoleapp
 
     private static string ReadUsername()
     {
-      string username;
+      string? username;
       Console.WriteLine("Enter your username");
       username = Console.ReadLine();
-      return username;
+      return username ?? "";
     }
 
     private static Message GetMessageDetail(GraphServiceClient client, string messageId)
@@ -131,14 +132,14 @@ namespace graphconsoleapp
       }
     }
 
-    private static IUserDeltaCollectionPage GetUsers(GraphServiceClient graphClient, object deltaLink)
+    private static IUserDeltaCollectionPage GetUsers(GraphServiceClient graphClient, object? deltaLink)
     {
       IUserDeltaCollectionPage page;
 
-      // IF this is the first request (previous=null), then request all users
+      // IF this is the first request, then request all users
       //    and include Delta() to request a delta link to be included in the
       //    last page of data
-      if (_previousPage == null)
+      if (_previousPage == null || deltaLink == null)
       {
         page = graphClient.Users
                           .Delta()
@@ -174,12 +175,13 @@ namespace graphconsoleapp
         OutputUsers(users);
       }
 
-      object deltaLink;
+      object? deltaLink;
 
       if (users.AdditionalData.TryGetValue("@odata.deltaLink", out deltaLink))
       {
         _deltaLink = deltaLink;
       }
     }
+
   }
 }

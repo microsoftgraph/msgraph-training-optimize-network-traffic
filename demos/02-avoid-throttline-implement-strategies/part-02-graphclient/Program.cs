@@ -16,9 +16,9 @@ using System.Text.Json;
 
 namespace graphconsoleapp
 {
-  class Program
+  public class Program
   {
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
       Console.WriteLine("Hello World!");
 
@@ -43,9 +43,10 @@ namespace graphconsoleapp
                                     .Top(100)
                                     .GetAsync()
                                     .Result;
+      var items = clientResponse.CurrentPage;
 
       var tasks = new List<Task>();
-      foreach (var graphMessage in clientResponse.CurrentPage)
+      foreach (var graphMessage in items)
       {
         tasks.Add(Task.Run(() =>
         {
@@ -54,7 +55,10 @@ namespace graphconsoleapp
 
           var messageDetail = GetMessageDetail(client, graphMessage.Id);
 
-          Console.WriteLine("SUBJECT: {0}", messageDetail.Subject);
+          if (messageDetail != null)
+          {
+            Console.WriteLine("SUBJECT: {0}", messageDetail.Subject);
+          }
 
         }));
       }
@@ -72,7 +76,7 @@ namespace graphconsoleapp
       Console.WriteLine("Elapsed time: {0} seconds", stopwatch.Elapsed.Seconds);
     }
 
-    private static IConfigurationRoot LoadAppSettings()
+    private static IConfigurationRoot? LoadAppSettings()
     {
       try
       {
@@ -137,10 +141,10 @@ namespace graphconsoleapp
 
     private static string ReadUsername()
     {
-      string username;
+      string? username;
       Console.WriteLine("Enter your username");
       username = Console.ReadLine();
-      return username;
+      return username ?? "";
     }
 
     private static Message GetMessageDetail(GraphServiceClient client, string messageId)
