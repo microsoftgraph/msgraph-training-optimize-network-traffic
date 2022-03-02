@@ -182,6 +182,5 @@ namespace graphconsoleapp
         _deltaLink = deltaLink;
       }
     }
-
   }
 }
