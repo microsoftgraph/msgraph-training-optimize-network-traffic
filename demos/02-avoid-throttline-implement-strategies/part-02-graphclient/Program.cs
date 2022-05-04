@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 using Microsoft.Identity.Client;
 using Microsoft.Graph;
 using Microsoft.Extensions.Configuration;
-using Helpers;
 using System.Text.Json;
+using Helpers;
 
 namespace graphconsoleapp
 {
@@ -20,8 +20,6 @@ namespace graphconsoleapp
   {
     public static void Main(string[] args)
     {
-      Console.WriteLine("Hello World!");
-
       var config = LoadAppSettings();
       if (config == null)
       {
@@ -29,10 +27,10 @@ namespace graphconsoleapp
         return;
       }
 
-      var userName = ReadUsername();
-      var userPassword = ReadPassword();
+      var client = GetAuthenticatedGraphClient(config);
 
-      var client = GetAuthenticatedGraphClient(config, userName, userPassword);
+      var profileResponse = client.Me.Request().GetAsync().Result;
+      Console.WriteLine("Hello " + profileResponse.DisplayName);
 
       var stopwatch = new System.Diagnostics.Stopwatch();
       stopwatch.Start();
@@ -99,52 +97,26 @@ namespace graphconsoleapp
       }
     }
 
-    private static IAuthenticationProvider CreateAuthorizationProvider(IConfigurationRoot config, string userName, SecureString userPassword)
+    private static IAuthenticationProvider CreateAuthorizationProvider(IConfigurationRoot config)
     {
       var clientId = config["applicationId"];
       var authority = $"https://login.microsoftonline.com/{config["tenantId"]}/v2.0";
 
       List<string> scopes = new List<string>();
-      scopes.Add("User.Read");
-      scopes.Add("Mail.Read");
+      scopes.Add("https://graph.microsoft.com/.default");
 
       var cca = PublicClientApplicationBuilder.Create(clientId)
                                               .WithAuthority(authority)
+                                              .WithDefaultRedirectUri()
                                               .Build();
-      return MsalAuthenticationProvider.GetInstance(cca, scopes.ToArray(), userName, userPassword);
+      return MsalAuthenticationProvider.GetInstance(cca, scopes.ToArray());
     }
 
-    private static GraphServiceClient GetAuthenticatedGraphClient(IConfigurationRoot config, string userName, SecureString userPassword)
+    private static GraphServiceClient GetAuthenticatedGraphClient(IConfigurationRoot config)
     {
-      var authenticationProvider = CreateAuthorizationProvider(config, userName, userPassword);
+      var authenticationProvider = CreateAuthorizationProvider(config);
       var graphClient = new GraphServiceClient(authenticationProvider);
       return graphClient;
-    }
-
-    private static SecureString ReadPassword()
-    {
-      Console.WriteLine("Enter your password");
-      SecureString password = new SecureString();
-      while (true)
-      {
-        ConsoleKeyInfo c = Console.ReadKey(true);
-        if (c.Key == ConsoleKey.Enter)
-        {
-          break;
-        }
-        password.AppendChar(c.KeyChar);
-        Console.Write("*");
-      }
-      Console.WriteLine();
-      return password;
-    }
-
-    private static string ReadUsername()
-    {
-      string? username;
-      Console.WriteLine("Enter your username");
-      username = Console.ReadLine();
-      return username ?? "";
     }
 
     private static Message GetMessageDetail(GraphServiceClient client, string messageId)
