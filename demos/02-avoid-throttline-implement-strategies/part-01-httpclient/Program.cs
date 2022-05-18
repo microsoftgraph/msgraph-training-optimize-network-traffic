@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 using Microsoft.Identity.Client;
 using Microsoft.Graph;
 using Microsoft.Extensions.Configuration;
-using Helpers;
 using System.Text.Json;
+using Helpers;
 
 namespace graphconsoleapp
 {
@@ -20,8 +20,6 @@ namespace graphconsoleapp
   {
     public static void Main(string[] args)
     {
-      Console.WriteLine("Hello World!");
-
       var config = LoadAppSettings();
       if (config == null)
       {
@@ -29,10 +27,13 @@ namespace graphconsoleapp
         return;
       }
 
-      var userName = ReadUsername();
-      var userPassword = ReadPassword();
+      var client = GetAuthenticatedHTTPClient(config);
 
-      var client = GetAuthenticatedHTTPClient(config, userName, userPassword);
+      var profileResponse = client.GetAsync("https://graph.microsoft.com/v1.0/me").Result;
+      var profileJson = profileResponse.Content.ReadAsStringAsync().Result;
+      var profileObject = JsonDocument.Parse(profileJson);
+      var displayName = profileObject.RootElement.GetProperty("displayName").GetString();
+      Console.WriteLine("Hello " + displayName);
 
       var stopwatch = new System.Diagnostics.Stopwatch();
       stopwatch.Start();
@@ -98,52 +99,26 @@ namespace graphconsoleapp
       }
     }
 
-    private static IAuthenticationProvider CreateAuthorizationProvider(IConfigurationRoot config, string userName, SecureString userPassword)
+    private static IAuthenticationProvider CreateAuthorizationProvider(IConfigurationRoot config)
     {
       var clientId = config["applicationId"];
       var authority = $"https://login.microsoftonline.com/{config["tenantId"]}/v2.0";
 
       List<string> scopes = new List<string>();
-      scopes.Add("User.Read");
-      scopes.Add("Mail.Read");
+      scopes.Add("https://graph.microsoft.com/.default");
 
       var cca = PublicClientApplicationBuilder.Create(clientId)
                                               .WithAuthority(authority)
+                                              .WithDefaultRedirectUri()
                                               .Build();
-      return MsalAuthenticationProvider.GetInstance(cca, scopes.ToArray(), userName, userPassword);
+      return MsalAuthenticationProvider.GetInstance(cca, scopes.ToArray());
     }
 
-    private static HttpClient GetAuthenticatedHTTPClient(IConfigurationRoot config, string userName, SecureString userPassword)
+    private static HttpClient GetAuthenticatedHTTPClient(IConfigurationRoot config)
     {
-      var authenticationProvider = CreateAuthorizationProvider(config, userName, userPassword);
+      var authenticationProvider = CreateAuthorizationProvider(config);
       var httpClient = new HttpClient(new AuthHandler(authenticationProvider, new HttpClientHandler()));
       return httpClient;
-    }
-
-    private static SecureString ReadPassword()
-    {
-      Console.WriteLine("Enter your password");
-      SecureString password = new SecureString();
-      while (true)
-      {
-        ConsoleKeyInfo c = Console.ReadKey(true);
-        if (c.Key == ConsoleKey.Enter)
-        {
-          break;
-        }
-        password.AppendChar(c.KeyChar);
-        Console.Write("*");
-      }
-      Console.WriteLine();
-      return password;
-    }
-
-    private static string ReadUsername()
-    {
-      string? username;
-      Console.WriteLine("Enter your username");
-      username = Console.ReadLine();
-      return username ?? "";
     }
 
     private static Message? GetMessageDetail(HttpClient client, string messageId, int defaultDelay = 2)
